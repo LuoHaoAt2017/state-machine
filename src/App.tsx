@@ -26,12 +26,12 @@ class App extends React.Component<IProps, IState> {
     this.heating = this.heating.bind(this);
     this.cooling = this.cooling.bind(this);
     this.createGraph = this.createGraph.bind(this);
-    this.renderGraph = this.renderGraph.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   set temperature(val) {
     this.h2o.change(val);
-    this.renderGraph();
+    this.handleChange();
     this.setState({
       air_temperature: val,
     });
@@ -262,10 +262,17 @@ class App extends React.Component<IProps, IState> {
     graph.fromJSON(data);
   }
 
-  renderGraph() {
-    const graph = this.graph;
+  handleChange() {
     const preState = this.h2o.preState?.constructor.name.toLowerCase();
     const curState = this.h2o.curState?.constructor.name.toLowerCase();
+    this.setNodeAtive(preState, curState);
+    if (preState && curState && preState !== curState) {
+      this.setEdgeActive(preState, curState);
+    }
+  }
+
+  setNodeAtive(preState, curState) {
+    const graph = this.graph;
     const nodes = graph.getNodes();
     nodes.forEach(function (item) {
       if (preState && item.id === preState) {
@@ -291,43 +298,45 @@ class App extends React.Component<IProps, IState> {
         });
       }
     });
-    if (preState && curState && preState !== curState) {
-      const edges = graph.getEdges();
-      edges.forEach(function (edge) {
-        const source = (edge.source as any).cell;
-        const target = (edge.target as any).cell;
-        if (source === preState && target === curState) {
-          edge.updateAttrs({
-            line: {
+  }
+
+  setEdgeActive(preState, curState) {
+    const graph = this.graph;
+    const edges = graph.getEdges();
+    edges.forEach(function (edge) {
+      const source = (edge.source as any).cell;
+      const target = (edge.target as any).cell;
+      if (source === preState && target === curState) {
+        edge.updateAttrs({
+          line: {
+            stroke: "orange",
+            strokeWidth: 4,
+            targetMarker: {
+              name: 'classic',
+              fill: "orange",
               stroke: "orange",
-              strokeWidth: 4,
-              targetMarker: {
-                name: 'classic',
-                fill: "orange",
-                stroke: "orange",
-              }
-            },
-            text: {
-              fill: 'orange',
             }
-          });
-        } else {
-          edge.updateAttrs({
-            line: {
-              stroke: "#000",
-              strokeWidth: 1,
-              targetMarker: {
-                fill: "#000",
-                name: 'classic',
-              }
-            },
-            text: {
-              fill: '#000',
+          },
+          text: {
+            fill: 'orange',
+          }
+        });
+      } else {
+        edge.updateAttrs({
+          line: {
+            stroke: "#000",
+            strokeWidth: 1,
+            targetMarker: {
+              fill: "#000",
+              name: 'classic',
             }
-          });
-        }
-      });
-    }
+          },
+          text: {
+            fill: '#000',
+          }
+        });
+      }
+    });
   }
 }
 
