@@ -144,12 +144,23 @@ class App extends React.Component<IProps, IState> {
       // 边
       edges: [
         {
+          id: "liquefaction",
           source: "gaseous",
           target: "liquid",
           connector: { name: "normal" },
           label: "液化",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+            text: {
+
+            }
+          },
         },
         {
+          id: "vaporize",
           source: "liquid",
           target: "gaseous",
           connector: { name: "smooth" },
@@ -160,14 +171,28 @@ class App extends React.Component<IProps, IState> {
             },
           ],
           label: "汽化",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+          },
         },
         {
+          id: "deposition",
           source: "gaseous",
           target: "solid",
           connector: { name: "normal" },
           label: "凝华",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+          },
         },
         {
+          id: "sublimation",
           source: "solid",
           target: "gaseous",
           connector: { name: "smooth" },
@@ -178,14 +203,28 @@ class App extends React.Component<IProps, IState> {
             },
           ],
           label: "升华",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+          },
         },
         {
+          id: "solidification",
           source: "liquid",
           target: "solid",
           connector: { name: "normal" },
           label: "凝固",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+          },
         },
         {
+          id: "melt",
           source: "solid",
           target: "liquid",
           connector: { name: "smooth" },
@@ -196,6 +235,12 @@ class App extends React.Component<IProps, IState> {
             },
           ],
           label: "溶化",
+          attrs: {
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+            },
+          },
         },
       ],
     };
@@ -219,18 +264,18 @@ class App extends React.Component<IProps, IState> {
 
   renderGraph() {
     const graph = this.graph;
-    const preState = this.h2o.preState?.constructor.name;
-    const curState = this.h2o.curState?.constructor.name;
+    const preState = this.h2o.preState?.constructor.name.toLowerCase();
+    const curState = this.h2o.curState?.constructor.name.toLowerCase();
     const nodes = graph.getNodes();
-    nodes && nodes.forEach(function (item) {
-      if (preState && item.id === preState.toLowerCase()) {
+    nodes.forEach(function (item) {
+      if (preState && item.id === preState) {
         item.updateAttrs({
           body: {
             fill: "blue",
             stroke: "#fff",
           },
         });
-      } else if (curState && item.id === curState.toLowerCase()) {
+      } else if (curState && item.id === curState) {
         item.updateAttrs({
           body: {
             fill: "red",
@@ -246,6 +291,43 @@ class App extends React.Component<IProps, IState> {
         });
       }
     });
+    if (preState && curState && preState !== curState) {
+      const edges = graph.getEdges();
+      edges.forEach(function (edge) {
+        const source = (edge.source as any).cell;
+        const target = (edge.target as any).cell;
+        if (source === preState && target === curState) {
+          edge.updateAttrs({
+            line: {
+              stroke: "orange",
+              strokeWidth: 4,
+              targetMarker: {
+                name: 'classic',
+                fill: "orange",
+                stroke: "orange",
+              }
+            },
+            text: {
+              fill: 'orange',
+            }
+          });
+        } else {
+          edge.updateAttrs({
+            line: {
+              stroke: "#000",
+              strokeWidth: 1,
+              targetMarker: {
+                fill: "#000",
+                name: 'classic',
+              }
+            },
+            text: {
+              fill: '#000',
+            }
+          });
+        }
+      });
+    }
   }
 }
 
