@@ -3,6 +3,7 @@
     "@babel/preset-react"
   ],
   "plugins": [
-    "@babel/plugin-transform-typescript"
+    "@babel/plugin-transform-typescript",
+    "@babel/plugin-transform-runtime"
   ]
 }
