@@ -1,22 +1,52 @@
 import React from "react";
 import { Graph } from "@antv/x6";
-import { Environment } from "./FSM";
 import { Button, Divider } from "antd";
+import H2O from "./FSM";
 import "antd/dist/antd.css";
 import "./App.less";
 
-class App extends React.Component {
-  private env = new Environment();
+interface IProps {}
+
+interface IState {
+  air_temperature: number;
+}
+
+class App extends React.Component<IProps, IState> {
+  private h2o: H2O = new H2O();
 
   private canvasRef = React.createRef<HTMLDivElement>();
 
+  private graph: Graph;
+
   constructor(props: any) {
     super(props);
-    this.slowHeat = this.slowHeat.bind(this);
-    this.fastHeat = this.fastHeat.bind(this);
-    this.slowCool = this.slowCool.bind(this);
-    this.fastCool = this.fastCool.bind(this);
-    this.addGraph = this.addGraph.bind(this);
+    this.state = {
+      air_temperature: 0,
+    };
+    this.heating = this.heating.bind(this);
+    this.cooling = this.cooling.bind(this);
+    this.createGraph = this.createGraph.bind(this);
+    this.renderGraph = this.renderGraph.bind(this);
+  }
+
+  set temperature(val) {
+    this.h2o.change(val);
+    this.renderGraph();
+    this.setState({
+      air_temperature: val,
+    });
+  }
+
+  get temperature() {
+    return this.state.air_temperature;
+  }
+
+  heating(val: number) {
+    this.temperature += val;
+  }
+
+  cooling(val: number) {
+    this.temperature -= val;
   }
 
   render() {
@@ -25,17 +55,18 @@ class App extends React.Component {
         <h3>水的三种状态随着温度的变化而变化</h3>
         <div ref={this.canvasRef}></div>
         <Divider type="horizontal"></Divider>
+        <h3>当前环境的温度是 {this.state.air_temperature}</h3>
         <div className="group">
-          <Button type="primary" onClick={this.slowHeat}>
+          <Button type="primary" onClick={() => this.heating(20)}>
             缓慢受热
           </Button>
-          <Button type="primary" onClick={this.fastHeat}>
+          <Button type="primary" onClick={() => this.heating(200)}>
             快速受热
           </Button>
-          <Button type="primary" onClick={this.slowCool}>
+          <Button type="primary" onClick={() => this.cooling(20)}>
             缓慢降温
           </Button>
-          <Button type="primary" onClick={this.fastCool}>
+          <Button type="primary" onClick={() => this.cooling(200)}>
             快速降温
           </Button>
         </div>
@@ -43,27 +74,12 @@ class App extends React.Component {
     );
   }
 
-  slowHeat() {
-    this.env.heating(20);
-  }
-
-  fastHeat() {
-    this.env.heating(200);
-  }
-
-  slowCool() {
-    this.env.cooling(20);
-  }
-
-  fastCool() {
-    this.env.cooling(200);
-  }
-
   componentDidMount() {
-    this.addGraph();
+    this.createGraph();
+    this.temperature = 25;
   }
 
-  addGraph() {
+  createGraph() {
     const data = {
       // 节点
       nodes: [
@@ -80,6 +96,10 @@ class App extends React.Component {
               fill: "#2ECC71",
               stroke: "#fff",
             },
+            label: {
+              fill: "#fff",
+              fontSize: 16,
+            },
           },
         },
         {
@@ -95,6 +115,10 @@ class App extends React.Component {
               fill: "#2ECC71",
               stroke: "#fff",
             },
+            label: {
+              fill: "#fff",
+              fontSize: 16,
+            },
           },
         },
         {
@@ -109,6 +133,10 @@ class App extends React.Component {
             body: {
               fill: "#2ECC71",
               stroke: "#fff",
+            },
+            label: {
+              fill: "#fff",
+              fontSize: 16,
             },
           },
         },
@@ -164,7 +192,7 @@ class App extends React.Component {
           vertices: [
             {
               x: (40 + 560) / 2 + 50,
-              y: 450 + 95,
+              y: 450 + 80,
             },
           ],
           label: "溶化",
@@ -172,7 +200,7 @@ class App extends React.Component {
       ],
     };
 
-    const graph = new Graph({
+    const graph = (this.graph = new Graph({
       container: this.canvasRef.current,
       width: 720,
       height: 600,
@@ -184,9 +212,40 @@ class App extends React.Component {
           edgeMovable: false,
         };
       },
-    });
+    }));
 
     graph.fromJSON(data);
+  }
+
+  renderGraph() {
+    const graph = this.graph;
+    const preState = this.h2o.preState?.constructor.name;
+    const curState = this.h2o.curState?.constructor.name;
+    const nodes = graph.getNodes();
+    nodes && nodes.forEach(function (item) {
+      if (preState && item.id === preState.toLowerCase()) {
+        item.updateAttrs({
+          body: {
+            fill: "blue",
+            stroke: "#fff",
+          },
+        });
+      } else if (curState && item.id === curState.toLowerCase()) {
+        item.updateAttrs({
+          body: {
+            fill: "red",
+            stroke: "#fff",
+          },
+        });
+      } else {
+        item.updateAttrs({
+          body: {
+            fill: "#2ECC71",
+            stroke: "#fff",
+          },
+        });
+      }
+    });
   }
 }
 
