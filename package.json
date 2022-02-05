@@ -7,7 +7,7 @@
     "test": "jest --color",
     "start": "webpack-dev-server",
     "build": "webpack --config webpack.config.js",
-    "commit": "git add . && git-cz",
+    "commit": "npm run build && git add . && git-cz",
     "publish": "git pull && npm version patch && git push"
   },
   "dependencies": {
