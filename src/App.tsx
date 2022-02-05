@@ -1,5 +1,5 @@
 import React from 'react';
-import { Environment } from './fsm';
+import { Environment } from './FSM';
 import { Button } from 'antd';
 import 'antd/dist/antd.css';
 import './App.less';
