@@ -1,6 +1,4 @@
-import './index.less';
-
-class Environment {
+export class Environment {
 
   private _temperature: number; // 气温
 
@@ -36,7 +34,7 @@ class Environment {
   }
 }
 
-class H2O {
+export class H2O {
   private _state: State;
 
   constructor(env: Environment) {
@@ -88,48 +86,4 @@ class Solid extends State {
       h2o.state = new Liquid(); // 溶化
     }
   }
-}
-
-window.onload = function () {
-  const env = new Environment();
-  const app = document.querySelector('#app');
-
-  const slowHeat = document.createElement('button');
-  slowHeat.innerText = '缓慢受热';
-  slowHeat.addEventListener('click', function() {
-    env.heating(10);
-    env.report();
-  });
-
-  const fastHeat = document.createElement('button');
-  fastHeat.innerText = '快速受热';
-  fastHeat.addEventListener('click', function() {
-    env.heating(200);
-    env.report();
-  });
-
-  const slowCool = document.createElement('button');
-  slowCool.innerText = '缓慢降温';
-  slowCool.addEventListener('click', function() {
-    env.cooling(10);
-    env.report();
-  });
-
-  const fastCool = document.createElement('button');
-  fastCool.innerText = '快速降温';
-  fastCool.addEventListener('click', function() {
-    env.cooling(200);
-    env.report();
-  });
-
-  const card = document.createElement('h3');
-  card.setAttribute('id', 'card');
-
-  app?.appendChild(card);
-  app?.appendChild(slowHeat);
-  app?.appendChild(fastHeat);
-  app?.appendChild(slowCool);
-  app?.appendChild(fastCool);
-  
-  env.report();
 }
