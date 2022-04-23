@@ -4,6 +4,11 @@
     "jsx": "react",
     "module": "ES6",
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      // 模块名到基于 baseUrl的路径映射的列表。
+      "@/*": ["./src/*"]
+    }
   }
 }
