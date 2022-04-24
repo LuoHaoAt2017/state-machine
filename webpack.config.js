@@ -1,53 +1,52 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
-  mode: 'development',
+  mode: "development",
   entry: {
-    'index': path.resolve(__dirname, 'src/index.tsx')
+    index: path.resolve(__dirname, "src/index.tsx"),
   },
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "dist"),
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: ['babel-loader'],
+        use: ["babel-loader"],
       },
       {
         test: /\.(ts|tsx)$/,
-        use: ['ts-loader'],
+        use: ["ts-loader"],
       },
       {
         test: /\.(css|less)$/,
-        use: ['style-loader', 'css-loader', 'less-loader'],
+        use: ["style-loader", "css-loader", "less-loader"],
       },
       {
         test: /\.(png|svg|jpg)$/,
-        use: ['file-loader'],
+        use: ["file-loader"],
       },
-    ]
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './public/index.html'),
-      favicon: path.resolve(__dirname, './public/favicon.ico'),
-      title: '有限状态机',
+      template: path.resolve(__dirname, "./public/index.html"),
+      favicon: path.resolve(__dirname, "./public/favicon.ico"),
+      title: "有限状态机",
     }),
     new CleanWebpackPlugin(),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      "@": path.resolve(__dirname, "src"),
     },
-    extensions: [
-      '.js', '.ts', '.jsx', '.tsx'
-    ]
+    extensions: [".js", ".ts", ".jsx", ".tsx"],
   },
   devServer: {
-    port: 9099
-  }
-}
+    port: 9000,
+    historyApiFallback: true,
+  },
+};

@@ -1,1 +1,1 @@
-# h2o-state-machine
+# state-machine
